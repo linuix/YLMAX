@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
-import android.widget.Toast;
+
+import com.xbl.ylmax.APP;
 
 public class ToastUtils {
     /**
@@ -19,15 +21,13 @@ public class ToastUtils {
             Log.e("toast", "call method showToast, text is null.");
             return;
         }
+        Message msg = Message.obtain();
+        msg.what = APP.MSG_TOAST;
+        msg.obj = txt+"";
+        APP.getInstance().mHandler.sendMessage(msg);
+    }
 
-        Handler handler =new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast toast = Toast.makeText(context, txt, Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.BOTTOM, 0, 100);
-                toast.show();
-            }
-        });
+    public static void showToast(String txt){
+        showToast(null,txt);
     }
 }

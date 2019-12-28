@@ -2,10 +2,13 @@ package com.xbl.ylmax;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Bundle;
 
 import com.xbl.ylmax.constString.ConstString;
+import com.xbl.ylmax.service.DYService;
+import com.xbl.ylmax.utils.NetUtil;
 import com.xbl.ylmax.utils.SystemInfoUtils;
 import com.xbl.ylmax.utils.ToastUtils;
 
@@ -42,7 +45,13 @@ public class MainActivity extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if (DYService.context == null){
+                    startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                }else {
+                    PackageManager pm = context.getPackageManager();
+                    Intent intent = pm.getLaunchIntentForPackage("com.ss.android.ugc.aweme");
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -77,5 +86,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void testNet(View view) {
+        NetUtil.obtainKeyValue();
     }
 }

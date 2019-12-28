@@ -27,4 +27,13 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/testButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试网络数据"
+        android:onClick="testNet"
+        tools:layout_editor_absoluteX="151dp"
+        tools:layout_editor_absoluteY="362dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
