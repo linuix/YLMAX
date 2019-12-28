@@ -3,6 +3,7 @@ package com.xbl.ylmax.service;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Path;
@@ -15,6 +16,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.MainActivity;
@@ -32,6 +34,12 @@ public class DYService extends AccessibilityService {
 
     public static final String LAUNCH_PACKAGE = "com.miui.home";
     public static final String DY_PACKAGE = "com.ss.android.ugc.aweme";
+
+
+    public static final String LOGIN_ACTIVITY = "com.ss.android.ugc.aweme.account.login.ui.LoginOrRegisterActivity";
+    public static final String DY_MAINACTIVITY = "com.ss.android.ugc.aweme.main.MainActivity";
+
+
 
     private AccessibilityEvent event;
 
@@ -65,11 +73,11 @@ public class DYService extends AccessibilityService {
     public void onAccessibilityEvent(final AccessibilityEvent event) {
         this.event = event;
         int type = event.getEventType();
-        Log.d(TAG, "onAccessibilityEvent: event type = 0x" + Integer.toHexString(type));
+//        Log.d(TAG, "onAccessibilityEvent: event type = 0x" + Integer.toHexString(type));
         String typeStr = event.eventTypeToString(type);
-        Log.d(TAG, "onAccessibilityEvent: typeStr = " + typeStr);
-        // 判断我们的辅助功能是否在约定好的应用界面执行，以设置界面为例
-        Log.d(TAG, "onAccessibilityEvent: ---------------package = " + event.getPackageName());
+//        Log.d(TAG, "onAccessibilityEvent: typeStr = " + typeStr);
+//        // 判断我们的辅助功能是否在约定好的应用界面执行，以设置界面为例
+//        Log.d(TAG, "onAccessibilityEvent: ---------------package = " + event.getPackageName());
         switch (type) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED: {
                 if (LAUNCH_PACKAGE.equals(event.getPackageName())) {
@@ -82,18 +90,29 @@ public class DYService extends AccessibilityService {
 
                 } else if (DY_PACKAGE.equals(event.getPackageName())) {
 
+                    ComponentName cName = new ComponentName(event.getPackageName().toString(),
+                            event.getClassName().toString());
+                    Log.d(TAG, "onAccessibilityEvent: cName.getClassName() = "+cName.getClassName());
+                    if (cName.getClassName().equals(LOGIN_ACTIVITY)){
+                        LoginAbility.getInstance().inputPhoneNumber();
+
+                    }else if (cName.getClassName().equals(DY_MAINACTIVITY)){
+                        LoginAbility.getInstance().openDY(event);
+                    }
 //                    APP.runWorkThread(new Runnable() {
 //                        @Override
 //                        public void run() {
 //                            LoginAbility.getInstance().skipUpdate();
 //                        }
 //                    }, 1000);
-                    APP.runWorkThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            LoginAbility.getInstance().gotoUserCenter();
-                        }
-                    }, 1000);
+//                    APP.runWorkThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            LoginAbility.getInstance().gotoUserCenter();
+//                        }
+//                    }, 1000);
+
+
 
                 }
             }
@@ -210,6 +229,7 @@ public class DYService extends AccessibilityService {
      * @param y1       Y轴
      * @param duration 延时
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void clickPoint(float x1, float y1, long duration) {
         Path path = new Path();
         path.moveTo(x1, y1);
@@ -235,6 +255,7 @@ public class DYService extends AccessibilityService {
     /**
      * 左滑
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void MainActivityToLeft() {
         final int x = ScreenUtils.getScreenWidth(this) / 2;
         final int y = ScreenUtils.getScreenHeight(this) / 2;
@@ -262,6 +283,7 @@ public class DYService extends AccessibilityService {
     /**
      * 滑动视频
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void MainActivityToUp() {
         final int x = ScreenUtils.getScreenWidth(this) / 2;
         final int y = ScreenUtils.getScreenHeight(this) / 2;

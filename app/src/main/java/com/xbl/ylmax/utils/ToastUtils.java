@@ -11,6 +11,8 @@ import android.view.Gravity;
 import com.xbl.ylmax.APP;
 
 public class ToastUtils {
+    private static final String TAG = "ToastUtils";
+
     /**
      * 在Service里面弹出Toast
      *
@@ -28,6 +30,7 @@ public class ToastUtils {
     }
 
     public static void showToast(String txt){
+        Log.d(TAG, "showToast: txt = "+txt);
         showToast(null,txt);
     }
 }

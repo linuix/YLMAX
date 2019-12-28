@@ -34,7 +34,7 @@ public class APP extends Application {
     });
 
     public static Handler workHandler = null;
-    public HandlerThread handlerThread = null;
+    public static HandlerThread handlerThread = null;
 
 
 

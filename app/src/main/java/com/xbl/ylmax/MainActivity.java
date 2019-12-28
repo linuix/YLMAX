@@ -1,34 +1,30 @@
 package com.xbl.ylmax;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 
-import com.xbl.ylmax.constString.ConstString;
 import com.xbl.ylmax.service.DYService;
 import com.xbl.ylmax.utils.NetUtil;
-import com.xbl.ylmax.utils.SystemInfoUtils;
-import com.xbl.ylmax.utils.ToastUtils;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.List;
+import java.security.Permissions;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     private Context context;
@@ -54,6 +50,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     public void SetToast(final String message)
@@ -89,6 +95,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void testNet(View view) {
-        NetUtil.obtainKeyValue();
+        NetUtil.obtainPhoneAndDownloadImg();
     }
 }

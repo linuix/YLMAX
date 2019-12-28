@@ -3,11 +3,14 @@ package com.xbl.ylmax.utils;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
+import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Author: link
@@ -16,6 +19,8 @@ import java.util.List;
  * 2019/12/28 0028 : Create NodeUtil.java (link);
  **/
 public class NodeUtil {
+
+    private static final String TAG = "NodeUtil";
 
     public static List<AccessibilityNodeInfo> findNodeForText(AccessibilityNodeInfo accessibilityNodeInfo, String text){
         List<AccessibilityNodeInfo> targetNodeInfo = new ArrayList<>();
@@ -32,28 +37,25 @@ public class NodeUtil {
            if (textNodeInfo.size() > 0){
                targetNodeInfo.addAll(childNodeInfo.findAccessibilityNodeInfosByText(text));
            }else {
-               findNodeForText(childNodeInfo,text);
+              findNodeForText(childNodeInfo,text);
            }
         }
         return targetNodeInfo;
     }
 
 
+    public static List<AccessibilityNodeInfo> targetNodeInfo = new ArrayList<>();
+
     public static List<AccessibilityNodeInfo> findeNodeForClassName(AccessibilityNodeInfo accessibilityNodeInfo,String className){
-        List<AccessibilityNodeInfo> targetNodeInfo = new ArrayList<>();
-        if (accessibilityNodeInfo == null){
-            return targetNodeInfo;
-        }
         int size = accessibilityNodeInfo.getChildCount();
         for (int i = 0; i<size; i++){
             AccessibilityNodeInfo childNodeInfo = accessibilityNodeInfo.getChild(i);
-            if (childNodeInfo == null){
-                return null;
-            }
+            Log.d(TAG, "findeNodeForClassName: className = "+childNodeInfo.getClassName());
+            Log.d(TAG, "findeNodeForClassName: result = "+childNodeInfo.getClassName().equals(className));
             if (childNodeInfo.getClassName().equals(className)){
                 targetNodeInfo.add(childNodeInfo);
             }else {
-                findeNodeForClassName(childNodeInfo,className);
+               findeNodeForClassName(childNodeInfo,className);
             }
         }
         return targetNodeInfo;
@@ -61,6 +63,7 @@ public class NodeUtil {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void clickPoint(AccessibilityService service, float x1, float y1, long duration) {
         Path path = new Path();
         path.moveTo(x1, y1);

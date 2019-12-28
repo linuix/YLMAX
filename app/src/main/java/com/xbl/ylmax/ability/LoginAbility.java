@@ -1,16 +1,28 @@
 package com.xbl.ylmax.ability;
 
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.xbl.ylmax.APP;
+import com.xbl.ylmax.utils.NetUtil;
 import com.xbl.ylmax.utils.NodeUtil;
 import com.xbl.ylmax.utils.ToastUtils;
 
 import java.util.List;
+
+import androidx.annotation.RequiresApi;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
+import static com.xbl.ylmax.utils.NodeUtil.findNodeForText;
+import static com.xbl.ylmax.utils.NodeUtil.targetNodeInfo;
 
 
 /**
@@ -42,6 +54,43 @@ public class LoginAbility extends Ability {
 
     }
 
+
+    public void inputPhoneNumber(){
+
+        AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
+        targetNodeInfo.clear();
+        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findeNodeForClassName(accessibilityNodeInfo,"android.widget.EditText");
+        Log.d(TAG, "inputPhoneNumber: accessibilityNodeInfoList.size() = " +accessibilityNodeInfoList.size());
+        if (accessibilityNodeInfoList.size()>0){
+            Bundle arguments = new Bundle();
+            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, NetUtil.phoneNumber);
+            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,arguments);
+        }
+
+        List<AccessibilityNodeInfo> infoList = findNodeForText(accessibilityNodeInfo,"获取验证码");
+        if (infoList.size()>0){
+            infoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            APP.runWorkThread(new Runnable() {
+                @Override
+                public void run() {
+                    NetUtil.obtainMsgCode();
+
+                }
+            },10000);
+        }
+
+        APP.workHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        },12000);
+
+    }
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void gotoUserCenter(){
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"我");
