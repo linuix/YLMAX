@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.ability.KeepAliveAbility;
 import com.xbl.ylmax.ability.UserAbility;
@@ -46,7 +47,7 @@ public class NetUtil {
     public static String token;
     public static String msgCode;
     public static String pid;
-    public static String deviceId = "1";
+    public static String deviceId = "";
 
 
 
@@ -61,6 +62,7 @@ public class NetUtil {
 
     public static final String YIXINGUrl = "http://yixin.xx09.cn:88/yhapi.ashx";
 
+    public static final String deviceUrl = "http://13.228.16.161:33023/api/task?device=1";
 
     public static void obtainPhoneAndDownloadImg(){
         final OkHttpClient okHttpClient = new OkHttpClient();
@@ -94,11 +96,43 @@ public class NetUtil {
             }
         },0);
 
+        //获取设备配置
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                if (key == null || value == null){
+                    return;
+                }
+                final Request request = new Request.Builder().url(deviceUrl).addHeader("content-type", "application/json").build();
+                final Call call = okHttpClient.newCall(request);
+                Response response = null;
+                try {
+                    response = call.execute();
+                    if (response.isSuccessful()){
+                        String resStr = response.body().string();
+                        Log.d(TAG, "deviceUrl: response = "+resStr);
+                        JSONObject jsonObject = new JSONObject(resStr);
+                        String status = jsonObject.getString("status");
+                        if (Integer.valueOf(status) == 0){
+                            String data = jsonObject.getString("data");
+                            //DeviceInfo deviceInfo= JSON.toJavaObject(data,DeviceInfo.class);
+                        }else {
+                            ToastUtils.showToast("服务器数据异常！");
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        },0);
+
         //获取头像 和 昵称。
         APP.runWorkThread(new Runnable() {
             @Override
             public void run() {
-                if (key == null || value == null || UserAbility.getInstance().hasImgUpdaled){
+                if (key == null || value == null){
                     return;
                 }
                 final Request request = new Request.Builder().url(nickImgUrl).addHeader("content-type", "application/json").build();
@@ -194,9 +228,6 @@ public class NetUtil {
         APP.runWorkThread(new Runnable() {
             @Override
             public void run() {
-                if (imgUrl==null || UserAbility.getInstance().hasImgUpdaled){
-                    return;
-                }
                 OkHttpClient client = new OkHttpClient();
 
                 //获取请求对象

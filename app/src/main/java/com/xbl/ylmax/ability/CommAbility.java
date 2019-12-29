@@ -1,6 +1,5 @@
 package com.xbl.ylmax.ability;
 
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.xbl.ylmax.utils.NodeUtil;
