@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -20,7 +21,9 @@ import androidx.annotation.RequiresApi;
 
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.MainActivity;
+import com.xbl.ylmax.ability.CommAbility;
 import com.xbl.ylmax.ability.LoginAbility;
+import com.xbl.ylmax.ability.UserAbility;
 import com.xbl.ylmax.constString.ConstString;
 import com.xbl.ylmax.utils.ScreenUtils;
 import com.xbl.ylmax.utils.SystemInfoUtils;
@@ -38,8 +41,21 @@ public class DYService extends AccessibilityService {
 
     public static final String LOGIN_ACTIVITY = "com.ss.android.ugc.aweme.account.login.ui.LoginOrRegisterActivity";
     public static final String DY_MAINACTIVITY = "com.ss.android.ugc.aweme.main.MainActivity";
+    public static final String INFO_EDIT_ACTIVITY = "com.ss.android.ugc.aweme.profile.ui.ProfileEditActivity";
+    public static final String SELECT_IMG_ACTIVITY = "com.zhihu.matisse.ui.MatisseActivity";
+    public static final String CROP_IMG_ACTIVITY = "com.ss.android.ugc.aweme.profile.ui.CropActivity";
 
 
+    public static final String cd = "com.ss.android.ugc.aweme.main.cd";
+    //com.ss.android.ugc.aweme.update.m --升级提醒
+    //com.ss.android.ugc.aweme.profile.ui.widget.aa
+
+    public static final String updataLevelClass = "com.ss.android.ugc.aweme.update.m";
+
+    //com.ss.android.ugc.aweme.profile.ui.widget.aa--修改名称的弹框
+    public static final String updateNameClass = "com.ss.android.ugc.aweme.profile.ui.widget.aa";
+
+    public static final String updateUserImgClass = "com.bytedance.ies.uikit.dialog.AlertDialog";
 
     private AccessibilityEvent event;
 
@@ -73,11 +89,14 @@ public class DYService extends AccessibilityService {
     public void onAccessibilityEvent(final AccessibilityEvent event) {
         this.event = event;
         int type = event.getEventType();
-//        Log.d(TAG, "onAccessibilityEvent: event type = 0x" + Integer.toHexString(type));
+        if (type == 0x800){
+            return;
+        }
+        Log.d(TAG, "onAccessibilityEvent: event type = 0x" + Integer.toHexString(type));
         String typeStr = event.eventTypeToString(type);
-//        Log.d(TAG, "onAccessibilityEvent: typeStr = " + typeStr);
-//        // 判断我们的辅助功能是否在约定好的应用界面执行，以设置界面为例
-//        Log.d(TAG, "onAccessibilityEvent: ---------------package = " + event.getPackageName());
+        Log.d(TAG, "onAccessibilityEvent: typeStr = " + typeStr);
+        // 判断我们的辅助功能是否在约定好的应用界面执行，以设置界面为例
+        Log.d(TAG, "onAccessibilityEvent: ---------------package = " + event.getPackageName());
         switch (type) {
             case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED: {
                 if (LAUNCH_PACKAGE.equals(event.getPackageName())) {
@@ -94,10 +113,34 @@ public class DYService extends AccessibilityService {
                             event.getClassName().toString());
                     Log.d(TAG, "onAccessibilityEvent: cName.getClassName() = "+cName.getClassName());
                     if (cName.getClassName().equals(LOGIN_ACTIVITY)){
-                        LoginAbility.getInstance().inputPhoneNumber();
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                LoginAbility.getInstance().inputPhoneNumber();
+                            }
+                        },2000);
 
                     }else if (cName.getClassName().equals(DY_MAINACTIVITY)){
-                        LoginAbility.getInstance().openDY(event);
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                LoginAbility.getInstance().gotoUserCenter();
+                                SystemClock.sleep(3000);
+                                UserAbility.getInstance().gotoEdit();
+                            }
+                        },1000);
+                    }else if (cName.getClassName().equals(updataLevelClass)){
+                        CommAbility.getInstance().ignoreUpdate();
+                    }else if (cName.getClassName().equals(updateNameClass)){
+                        UserAbility.getInstance().updateNickName();
+                    }else if(cName.getClassName().equals(INFO_EDIT_ACTIVITY)){
+                        UserAbility.getInstance().showUpdateImg();
+                    }else if (cName.getClassName().equals(updateUserImgClass)){
+                        UserAbility.getInstance().editImg();
+                    }else if (cName.getClassName().equals(SELECT_IMG_ACTIVITY)){
+                        UserAbility.getInstance().selectImg();
+                    }else if (cName.getClassName().equals(CROP_IMG_ACTIVITY)){
+                        UserAbility.getInstance().cropImg();
                     }
 //                    APP.runWorkThread(new Runnable() {
 //                        @Override
@@ -111,9 +154,6 @@ public class DYService extends AccessibilityService {
 //                            LoginAbility.getInstance().gotoUserCenter();
 //                        }
 //                    }, 1000);
-
-
-
                 }
             }
         }
@@ -152,6 +192,8 @@ public class DYService extends AccessibilityService {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected: ");
         LoginAbility.getInstance().init(this);
+        CommAbility.getInstance().init(this);
+        UserAbility.getInstance().init(this);
         startActivity(new Intent(this, MainActivity.class));
     }
 

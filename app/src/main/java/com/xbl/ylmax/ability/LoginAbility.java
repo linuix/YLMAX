@@ -43,6 +43,7 @@ public class LoginAbility extends Ability {
     public void openDY(AccessibilityEvent event){
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"抖音短视频");
+        Log.d(TAG, "openDY: accessibilityNodeInfoList.size() = "+accessibilityNodeInfoList.size());
         if (accessibilityNodeInfoList.size() > 0){
             accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
             ToastUtils.showToast("抖音打开成功！");
@@ -61,30 +62,32 @@ public class LoginAbility extends Ability {
         targetNodeInfo.clear();
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findeNodeForClassName(accessibilityNodeInfo,"android.widget.EditText");
         Log.d(TAG, "inputPhoneNumber: accessibilityNodeInfoList.size() = " +accessibilityNodeInfoList.size());
-        if (accessibilityNodeInfoList.size()>0){
+        if (accessibilityNodeInfoList.size()>1){
             Bundle arguments = new Bundle();
             arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, NetUtil.phoneNumber);
             accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,arguments);
-        }
 
-        List<AccessibilityNodeInfo> infoList = findNodeForText(accessibilityNodeInfo,"获取验证码");
-        if (infoList.size()>0){
-            infoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            APP.runWorkThread(new Runnable() {
+            final AccessibilityNodeInfo msgCodeNodeInfo = accessibilityNodeInfoList.get(1);
+            List<AccessibilityNodeInfo> infoList = findNodeForText(accessibilityNodeInfo,"获取验证码");
+            if (infoList.size()>0){
+                infoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                APP.runWorkThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NetUtil.obtainMsgCode();
+                    }
+                },5000);
+            }
+
+            APP.workHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    NetUtil.obtainMsgCode();
-
+                    Bundle arguments = new Bundle();
+                    arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, NetUtil.msgCode);
+                    msgCodeNodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,arguments);
                 }
-            },10000);
+            },6000);
         }
-
-        APP.workHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        },12000);
 
     }
 
@@ -95,18 +98,18 @@ public class LoginAbility extends Ability {
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"我");
         for (int i = 0; i<accessibilityNodeInfoList.size() ;i++){
-            if (accessibilityNodeInfoList.get(i).getParent().isClickable()){
-                boolean res = accessibilityNodeInfoList.get(i).getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                ToastUtils.showToast("进入我的界面");
-                return;
-            }else {
+//            if (accessibilityNodeInfoList.get(i).getParent().isClickable()){
+//                boolean res = accessibilityNodeInfoList.get(i).getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//                ToastUtils.showToast("进入我的界面"+res);
+//                return;
+//            }else {
                 Rect rectangle = new Rect();
                 accessibilityNodeInfoList.get(i).getBoundsInScreen(rectangle);
                 int x = rectangle.centerX();
                 int y = rectangle.centerY();
                 NodeUtil.clickPoint(mService,x,y,100);
                 Log.d(TAG, "gotoUserCenter: ");
-            }
+//            }
         }
     }
 

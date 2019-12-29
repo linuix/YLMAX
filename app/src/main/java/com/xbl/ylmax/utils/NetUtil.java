@@ -43,6 +43,7 @@ public class NetUtil {
     public static String phoneNumber;
     public static String token;
     public static String msgCode;
+    public static String pid;
 
 
 
@@ -170,6 +171,7 @@ public class NetUtil {
                         String resStr = response.body().string();
                         Log.d(TAG, "getPhone YIXINGUrl: response = "+resStr);
                         phoneNumber = resStr.split("\\|")[4];
+                        pid = resStr.split("\\|")[1];
                         Log.d(TAG, "run: phoneNumber = "+phoneNumber);
                     }
                 } catch (IOException e) {
@@ -214,6 +216,7 @@ public class NetUtil {
     }
 
 
+    //获取验证码
     public static void obtainMsgCode(){
         final OkHttpClient okHttpClient = new OkHttpClient();
 
@@ -222,9 +225,9 @@ public class NetUtil {
             public void run() {
 
                 Map <String, String> map = new HashMap<>();
-                map.put("act","getPhone");
+                map.put("act","getPhoneCode");
                 map.put("token",token);
-                map.put("iid","2499");
+                map.put("pid",pid);
                 Request request = addParameter(map,YIXINGUrl);
                 final Call call = okHttpClient.newCall(request);
                 Response response = null;
@@ -236,7 +239,8 @@ public class NetUtil {
                         Log.d(TAG, "getPhone YIXINGUrl: response = "+resStr);
                         if (Integer.valueOf(resStr.split("\\|")[0]) == 1){
                             msgCode = resStr.split("\\|")[1];
-                            Log.d(TAG, "run: phoneNumber = "+msgCode);
+                            Log.d(TAG, "run: msgCode = "+msgCode);
+                            ToastUtils.showToast("获取验证码 = "+msgCode);
                         }else {
                             Log.d(TAG, "run: 验证码获取失败 error = "+Integer.valueOf(resStr.split("\\|")[0]));
                         }
