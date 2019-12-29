@@ -23,6 +23,7 @@ import androidx.annotation.RequiresApi;
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.MainActivity;
 import com.xbl.ylmax.ability.CommAbility;
+import com.xbl.ylmax.ability.FollowAbility;
 import com.xbl.ylmax.ability.KeepAliveAbility;
 import com.xbl.ylmax.ability.LoginAbility;
 import com.xbl.ylmax.ability.UserAbility;
@@ -71,6 +72,7 @@ public class DYService extends AccessibilityService {
         //TODO
         //获取配置 1.第三方码平台账号 2.后台全局设置参数相关
         context = getApplicationContext();
+        ToastUtils.showToast(context, "启动服务");
         Log.d(TAG, "onCreate: ");
         //新开线程启动APP，防止主线程阻塞
 //        Thread newThread  = new Thread(new Runnable() {
@@ -243,6 +245,8 @@ public class DYService extends AccessibilityService {
         CommAbility.getInstance().init(this);
         UserAbility.getInstance().init(this);
         KeepAliveAbility.getInstance().init(this);
+        FollowAbility.getInstance().init(this);
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     public void mySleep(int m) {
