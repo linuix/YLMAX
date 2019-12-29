@@ -22,6 +22,14 @@ public class DeviceInfo {
     public void setData(Data data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "DeviceInfo{" +
+                "status='" + status + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }
 
 class Video{
@@ -42,6 +50,14 @@ class Video{
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "Video{" +
+                "title='" + title + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }
 
@@ -73,6 +89,15 @@ class TokDY{
     public void setFollow(String follow) {
         this.follow = follow;
     }
+
+    @Override
+    public String toString() {
+        return "TokDY{" +
+                "video='" + video + '\'' +
+                ", talking='" + talking + '\'' +
+                ", follow='" + follow + '\'' +
+                '}';
+    }
 }
 
 
@@ -94,6 +119,14 @@ class DuoSan{
 
     public void setFollow(String follow) {
         this.follow = follow;
+    }
+
+    @Override
+    public String toString() {
+        return "DuoSan{" +
+                "talking='" + talking + '\'' +
+                ", follow='" + follow + '\'' +
+                '}';
     }
 }
 
@@ -188,6 +221,22 @@ class Data{
 
     public void setPrivate_num_2(int private_num_2) {
         this.private_num_2 = private_num_2;
+    }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "tok_1=" + tok_1 +
+                ", tok_2=" + tok_2 +
+                ", san_1=" + san_1 +
+                ", san_2=" + san_2 +
+                ", follow_num_1=" + follow_num_1 +
+                ", follow_num_2=" + follow_num_2 +
+                ", fans_num_1=" + fans_num_1 +
+                ", fans_num_2=" + fans_num_2 +
+                ", private_num_1=" + private_num_1 +
+                ", private_num_2=" + private_num_2 +
+                '}';
     }
 }
 

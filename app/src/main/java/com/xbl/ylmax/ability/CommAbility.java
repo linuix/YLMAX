@@ -38,8 +38,4 @@ public class CommAbility extends Ability {
     }
 
 
-
-    public void testEvent(AccessibilityEvent event){
-
-    }
 }

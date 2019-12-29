@@ -1,7 +1,6 @@
 package com.xbl.ylmax.utils;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -9,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.ability.KeepAliveAbility;
 import com.xbl.ylmax.ability.UserAbility;
+import com.xbl.ylmax.entity.DeviceInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,18 +111,20 @@ public class NetUtil {
                     if (response.isSuccessful()){
                         String resStr = response.body().string();
                         Log.d(TAG, "deviceUrl: response = "+resStr);
-                        JSONObject jsonObject = new JSONObject(resStr);
-                        String status = jsonObject.getString("status");
-                        if (Integer.valueOf(status) == 0){
-                            String data = jsonObject.getString("data");
-                            //DeviceInfo deviceInfo= JSON.toJavaObject(data,DeviceInfo.class);
-                        }else {
-                            ToastUtils.showToast("服务器数据异常！");
-                        }
+                        com.alibaba.fastjson.JSONObject json = JSON.parseObject(resStr);
+                        DeviceInfo deviceInfo= JSON.toJavaObject(json,DeviceInfo.class);
+                        Log.d(TAG, "run: deviceInfo.toString() = "+deviceInfo.toString());
+
+//                        JSONObject jsonObject = new JSONObject(resStr);
+//                        String status = jsonObject.getString("status");
+//                        if (Integer.valueOf(status) == 0){
+//                            String data = jsonObject.getString("data");
+//                            //DeviceInfo deviceInfo= JSON.toJavaObject(data,DeviceInfo.class);
+//                        }else {
+//                            ToastUtils.showToast("服务器数据异常！");
+//                        }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
