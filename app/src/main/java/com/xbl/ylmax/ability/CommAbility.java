@@ -31,4 +31,13 @@ public class CommAbility extends Ability {
         }
     }
 
+    public void ignoreAdvert(){
+        AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
+        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"跳过广告");
+        if (accessibilityNodeInfoList.size() > 0){
+            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            ToastUtils.showToast("忽略广告成功！");
+        }
+    }
+
 }

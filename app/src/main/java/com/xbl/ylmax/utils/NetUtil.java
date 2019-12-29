@@ -5,7 +5,9 @@ import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.xbl.ylmax.APP;
+import com.xbl.ylmax.entity.DeviceInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,13 +48,13 @@ public class NetUtil {
     public static String pid;
     public static String deviceId = "";
 
-
-
     public static final String keyValueUrl = "http://13.228.16.161:33023/api/getconfig";
 
     public static final String nickImgUrl = "http://13.228.16.161:33023/api/information";
 
     public static final String YIXINGUrl = "http://yixin.xx09.cn:88/yhapi.ashx";
+
+    public static final String deviceUrl = "http://13.228.16.161:33023/api/task?device=1";
 
     public static void obtainPhoneAndDownloadImg(){
         final OkHttpClient okHttpClient = new OkHttpClient();
@@ -76,6 +78,38 @@ public class NetUtil {
                             key = dataJson.getString("key");
                             value = dataJson.getString("value");
                             ToastUtils.showToast("获取服务器数据成功！");
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        },0);
+
+        //获取设备配置
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                if (key == null || value == null){
+                    return;
+                }
+                final Request request = new Request.Builder().url(deviceUrl).addHeader("content-type", "application/json").build();
+                final Call call = okHttpClient.newCall(request);
+                Response response = null;
+                try {
+                    response = call.execute();
+                    if (response.isSuccessful()){
+                        String resStr = response.body().string();
+                        Log.d(TAG, "deviceUrl: response = "+resStr);
+                        JSONObject jsonObject = new JSONObject(resStr);
+                        String status = jsonObject.getString("status");
+                        if (Integer.valueOf(status) == 0){
+                            String data = jsonObject.getString("data");
+                            //DeviceInfo deviceInfo= JSON.toJavaObject(data,DeviceInfo.class);
+                        }else {
+                            ToastUtils.showToast("服务器数据异常！");
                         }
                     }
                 } catch (IOException e) {
