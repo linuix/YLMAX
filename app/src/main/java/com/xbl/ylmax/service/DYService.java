@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.MainActivity;
 import com.xbl.ylmax.ability.CommAbility;
+import com.xbl.ylmax.ability.KeepAliveAbility;
 import com.xbl.ylmax.ability.LoginAbility;
 import com.xbl.ylmax.ability.UserAbility;
 import com.xbl.ylmax.constString.ConstString;
@@ -124,9 +125,11 @@ public class DYService extends AccessibilityService {
                         APP.runWorkThread(new Runnable() {
                             @Override
                             public void run() {
-                                LoginAbility.getInstance().gotoUserCenter();
+//                                LoginAbility.getInstance().gotoUserCenter();
                                 SystemClock.sleep(3000);
-                                UserAbility.getInstance().gotoEdit();
+                                KeepAliveAbility.getInstance().doubleClick();
+//                                UserAbility.getInstance().gotoEdit();
+//                                KeepAliveAbility.getInstance().obtainUserFlow();
                             }
                         },1000);
                     }else if (cName.getClassName().equals(updataLevelClass)){
@@ -194,6 +197,7 @@ public class DYService extends AccessibilityService {
         LoginAbility.getInstance().init(this);
         CommAbility.getInstance().init(this);
         UserAbility.getInstance().init(this);
+        KeepAliveAbility.getInstance().init(this);
         startActivity(new Intent(this, MainActivity.class));
     }
 

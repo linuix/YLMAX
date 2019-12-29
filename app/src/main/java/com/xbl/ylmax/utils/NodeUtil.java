@@ -86,4 +86,35 @@ public class NodeUtil {
         }, null);
     }
 
+
+    public static AccessibilityNodeInfo getNodeByClassName(StringBuilder sb, AccessibilityNodeInfo nodeInfo, String... classNames) {
+        if (nodeInfo.getChildCount() == 0) {
+            return null;
+        }
+
+        for (int i = 0; i < nodeInfo.getChildCount(); i++) {
+            AccessibilityNodeInfo childNodeInfo = nodeInfo.getChild(i);
+            for (String className : classNames) {
+                if (childNodeInfo.getClassName().toString().equals(className) && isNumericZidai(childNodeInfo.getText())) {
+                    sb.append(","+childNodeInfo.getText()+"");
+                }
+            }
+            getNodeByClassName(sb, childNodeInfo, classNames);
+        }
+        return null;
+    }
+
+    public static boolean isNumericZidai(CharSequence charSequence) {
+        if (charSequence ==null){
+            return false;
+        }
+        String str = charSequence.toString();
+        for (int i = 0; i < str.length(); i++) {
+            System.out.println(str.charAt(i));
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

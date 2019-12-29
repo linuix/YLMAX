@@ -45,7 +45,7 @@ public class LoginAbility extends Ability {
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"抖音短视频");
         Log.d(TAG, "openDY: accessibilityNodeInfoList.size() = "+accessibilityNodeInfoList.size());
         if (accessibilityNodeInfoList.size() > 0){
-            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            accessibilityNodeInfoList.get(2).performAction(AccessibilityNodeInfo.ACTION_CLICK);
             ToastUtils.showToast("抖音打开成功！");
         }
     }
