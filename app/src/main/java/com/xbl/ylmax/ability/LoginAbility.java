@@ -37,19 +37,21 @@ public class LoginAbility extends Ability {
     private static final String TAG = "LoginAbility";
     private static LoginAbility loginAbility = new LoginAbility();
 
+    public boolean isFirst = false;
+
     public static LoginAbility getInstance(){
         return loginAbility;
     }
 
-    private String workStatus = "workStatus";
 
-    public boolean isWorked = false;
+
+
+
 
     @Override
     public void init(AccessibilityService accessibilityService) {
         super.init(accessibilityService);
-        isWorked = SPUtil.readDataFromKey(workStatus,Boolean.class);
-        Log.d(TAG, "init: isWorked = "+isWorked);
+
     }
 
     public void openDY(AccessibilityEvent event){
@@ -57,7 +59,7 @@ public class LoginAbility extends Ability {
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"抖音短视频");
         Log.d(TAG, "openDY: accessibilityNodeInfoList.size() = "+accessibilityNodeInfoList.size());
         if (accessibilityNodeInfoList.size() > 0){
-            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            accessibilityNodeInfoList.get(2).performAction(AccessibilityNodeInfo.ACTION_CLICK);
             ToastUtils.showToast("抖音打开成功！");
         }
     }
@@ -107,22 +109,15 @@ public class LoginAbility extends Ability {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void gotoUserCenter(){
+        isFirst = !(UserAbility.getInstance().isWorked && UserAbility.getInstance().hasImgUpdaled);
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
-        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"我");
-        for (int i = 0; i<accessibilityNodeInfoList.size() ;i++){
-//            if (accessibilityNodeInfoList.get(i).getParent().isClickable()){
-//                boolean res = accessibilityNodeInfoList.get(i).getParent().performAction(AccessibilityNodeInfo.ACTION_CLICK);
-//                ToastUtils.showToast("进入我的界面"+res);
-//                return;
-//            }else {
-                Rect rectangle = new Rect();
-                accessibilityNodeInfoList.get(i).getBoundsInScreen(rectangle);
-                int x = rectangle.centerX();
-                int y = rectangle.centerY();
-                NodeUtil.clickPoint(mService,x,y,100);
-                Log.d(TAG, "gotoUserCenter: ");
+//        List<AccessibilityNodeInfo> nodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"我");
+//        if (nodeInfoList!=null){
+//            for (AccessibilityNodeInfo nodeInfo :nodeInfoList){
+//
 //            }
-        }
+//        }
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"我");
     }
 
 

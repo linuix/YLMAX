@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.xbl.ylmax.APP;
+import com.xbl.ylmax.utils.DelayUtil;
+import com.xbl.ylmax.utils.NetUtil;
 import com.xbl.ylmax.utils.NodeUtil;
 import com.xbl.ylmax.utils.ScreenUtils;
 import com.xbl.ylmax.utils.SystemInfoUtils;
@@ -24,10 +26,11 @@ import java.util.List;
 public class KeepAliveAbility extends Ability {
 
     private static final String TAG = "KeepAliveAbility";
-    public int fans;
-    public int flow;
-    public int like;
+    public int fans = -1;
+    public int flow = -1;
+    public int like = -1;
 
+    public boolean isStart = false;
 
 
 
@@ -45,13 +48,21 @@ public class KeepAliveAbility extends Ability {
      * 获取个人粉丝数量相关
      */
     public void obtainUserFlow(){
-        AccessibilityNodeInfo rootNodeInfo = mService.getRootInActiveWindow();
-        if (rootNodeInfo == null) {
-            return;
+        try {
+            AccessibilityNodeInfo rootNodeInfo = mService.getRootInActiveWindow();
+            if (rootNodeInfo == null) {
+                return;
+            }
+            StringBuilder sb = new StringBuilder();
+            NodeUtil.getNodeByClassName(sb, rootNodeInfo, "android.widget.TextView");
+            Log.d(TAG, "obtainUserFlow: sb =  "+sb.toString());
+            like = Integer.valueOf(sb.toString().split(",")[0]);
+            flow = Integer.valueOf(sb.toString().split(",")[1]);
+            fans = Integer.valueOf(sb.toString().split(",")[2]);
+            NetUtil.upLoadUserInfo(flow,fans);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        StringBuilder sb = new StringBuilder();
-        NodeUtil.getNodeByClassName(sb, rootNodeInfo, "android.widget.TextView");
-        Log.d(TAG, "obtainUserFlow: sb =  "+sb.toString());
     }
 
     /**
@@ -64,6 +75,7 @@ public class KeepAliveAbility extends Ability {
         NodeUtil.clickPoint(mService,scx,scy,3);
         SystemClock.sleep(200);
         NodeUtil.clickPoint(mService,scx,scy,3);
+        ToastUtils.showToast("点赞成功！");
     }
 
     /**
@@ -120,7 +132,7 @@ public class KeepAliveAbility extends Ability {
     /**
      * 向上滑动视频
      */
-    private void MainActivityToUp() {
+    public void MainActivityToUp() {
         final int x = ScreenUtils.getScreenWidth(mService) / 2;
         final int y = ScreenUtils.getScreenHeight(mService) / 2;
         Path path = new Path();
@@ -140,18 +152,21 @@ public class KeepAliveAbility extends Ability {
                 super.onCancelled(gestureDescription);
             }
         }, null);
+        ToastUtils.showToast("下一个视频");
+
     }
 
     /**
      * 检测内存的使用情况,退出桌面的时候调用
      */
     public void checkMemory(){
-        double usedRatio = SystemInfoUtils.getUsedMemoryRatio(mService);
-        if(usedRatio > 60){
-            ToastUtils.showToast(mService, "清理内存");
-            //执行清理内存的操作
-            perforGlobalClick("com.miui.home:id/progressBar");
-        }
+//        double usedRatio = SystemInfoUtils.getUsedMemoryRatio(mService);
+//        if(usedRatio > 60){
+//
+//        }
+        ToastUtils.showToast(mService, "清理内存");
+        //执行清理内存的操作
+        perforGlobalClick("com.miui.home:id/progressBar");
     }
 
     /**
@@ -172,5 +187,20 @@ public class KeepAliveAbility extends Ability {
                 break;
             }
         }
+    }
+
+
+    public void startAlive() {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,nodeInfo,"首页");
+        ToastUtils.showToast("返回首页");
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivityToUp();
+                isStart = true;
+                ToastUtils.showToast("浏览下一个视频");
+            }
+        }, DelayUtil.getViewVideoTime());
     }
 }

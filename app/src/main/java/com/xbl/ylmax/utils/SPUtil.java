@@ -19,7 +19,7 @@ public class SPUtil {
 
     public static String spName = "data_sp";
 
-    public static void wirteData(String key,Object value){
+    public static void writeData(String key, Object value){
         SharedPreferences sharedPreferences = APP.getInstance().getSharedPreferences(spName,MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (value instanceof String){

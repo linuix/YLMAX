@@ -8,6 +8,8 @@ import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +99,7 @@ public class NodeUtil {
             AccessibilityNodeInfo childNodeInfo = nodeInfo.getChild(i);
             for (String className : classNames) {
                 if (childNodeInfo.getClassName().toString().equals(className) && isNumericZidai(childNodeInfo.getText())) {
-                    sb.append(","+childNodeInfo.getText()+"");
+                    sb.append(childNodeInfo.getText()+",");
                 }
             }
             getNodeByClassName(sb, childNodeInfo, classNames);
@@ -123,7 +125,10 @@ public class NodeUtil {
     }
 
     public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt){
-        clickNodeForTxt(service,nodeInfo,txt,0);
+        clickNodeForTxt(service,nodeInfo,txt,0,null);
+    }
+    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt,String cls){
+        clickNodeForTxt(service,nodeInfo,txt,0,cls);
     }
 
     /**
@@ -133,26 +138,63 @@ public class NodeUtil {
      * @param txt
      * @param index 第几个
      */
-    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int index){
+    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int index,String className){
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(nodeInfo,txt);
+        for (int i = accessibilityNodeInfoList.size()-1;i>=0;i--){
 
+            if (accessibilityNodeInfoList.get(i).getClassName().equals("android.widget.TextView")){
+                if (!txt.equals(accessibilityNodeInfoList.get(i).getText())){
+                    accessibilityNodeInfoList.remove(i);
+                    continue;
+                }
+
+            }else {
+                if (!txt.equals(accessibilityNodeInfoList.get(i).getContentDescription())){
+                    accessibilityNodeInfoList.remove(i);
+                    continue;
+                }
+            }
+            if (className != null){
+                if (!className.equals(accessibilityNodeInfoList.get(i).getClassName())){
+                    accessibilityNodeInfoList.remove(i);
+                    continue;
+                }
+            }
+
+        }
         if (accessibilityNodeInfoList!=null && accessibilityNodeInfoList.size() > index){
-            boolean clicked = accessibilityNodeInfoList.get(index).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            if (clicked){
-                Log.d(TAG, "clickNodeForTxt: txt = "+txt+"点击成功");
+//            boolean clicked = accessibilityNodeInfoList.get(index).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            if (false){
+                Log.d(TAG, "clickNodeForTxt: txt = "+accessibilityNodeInfoList.get(index).getText()+"点击成功");
             }else {
                 Rect rect = new Rect();
                 accessibilityNodeInfoList.get(index).getBoundsInScreen(rect);
+//                Log.d(TAG, "clickNodeForTxt: left = "+rect.left);
+//                Log.d(TAG, "clickNodeForTxt: right = "+rect.right);
+//                Log.d(TAG, "clickNodeForTxt: top = "+rect.top);
+//                Log.d(TAG, "clickNodeForTxt: bottom = "+rect.bottom);
                 int x = rect.centerX();
                 int y = rect.centerY();
-                clickPoint(service,x,y,100);
+//                Log.d(TAG, "clickNodeForTxt: x = "+x);
+//                Log.d(TAG, "clickNodeForTxt: y = "+y);
+                clickPoint(service,x+20,y+10,200);
             }
+
         }
     }
 
 
-    public static void clickHome(){
-
+    public static void goHome(AccessibilityService service){
+        service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
     }
+
+    public static void topSlide(AccessibilityService service){
+        service.performGlobalAction(AccessibilityService.GESTURE_SWIPE_UP);
+    }
+
+
+
+
+
 
 }

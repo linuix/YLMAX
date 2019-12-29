@@ -1,5 +1,6 @@
 package com.xbl.ylmax.ability;
 
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.xbl.ylmax.utils.NodeUtil;
@@ -31,4 +32,15 @@ public class CommAbility extends Ability {
         }
     }
 
+    public void ignoreFrend(){
+        AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"取消");
+        ToastUtils.showToast("取消好友通讯录！");
+    }
+
+
+
+    public void testEvent(AccessibilityEvent event){
+
+    }
 }

@@ -21,12 +21,18 @@ public class APP extends Application {
     public static final int MSG_TOAST = 0X1001;
     public static final int MSG_APPEND = 0X1002;
 
+    public static int deviceNumber = 1;
+
+    public String msgTxt = "";
+    public String oldTxt = "";
+
 
     public Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what){
                 case MSG_TOAST:{
+                    msgTxt = msg.obj.toString();
                     Toast.makeText(APP.this.getApplicationContext(),msg.obj.toString(),Toast.LENGTH_SHORT).show();
                 }
                 case MSG_APPEND:{
@@ -65,6 +71,7 @@ public class APP extends Application {
 
 
     public static void runWorkThread(Runnable runnable,int delayed){
+        workHandler.removeCallbacks(null);
         workHandler.postDelayed(runnable,delayed);
     }
 }

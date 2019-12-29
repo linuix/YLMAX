@@ -6,6 +6,8 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.xbl.ylmax.APP;
+import com.xbl.ylmax.ability.KeepAliveAbility;
+import com.xbl.ylmax.ability.UserAbility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,13 +46,15 @@ public class NetUtil {
     public static String token;
     public static String msgCode;
     public static String pid;
-    public static String deviceId = "";
+    public static String deviceId = "1";
 
 
 
     public static final String keyValueUrl = "http://13.228.16.161:33023/api/getconfig";
 
     public static final String obtainDeviceUrl = "http://13.228.16.161:33023/api/ver_device";
+
+    public static final String uploadUserInfoUrl = "http://13.228.16.161:33023/api/update_details";
 
 
     public static final String nickImgUrl = "http://13.228.16.161:33023/api/information";
@@ -94,7 +98,7 @@ public class NetUtil {
         APP.runWorkThread(new Runnable() {
             @Override
             public void run() {
-                if (key == null || value == null){
+                if (key == null || value == null || UserAbility.getInstance().hasImgUpdaled){
                     return;
                 }
                 final Request request = new Request.Builder().url(nickImgUrl).addHeader("content-type", "application/json").build();
@@ -190,6 +194,9 @@ public class NetUtil {
         APP.runWorkThread(new Runnable() {
             @Override
             public void run() {
+                if (imgUrl==null || UserAbility.getInstance().hasImgUpdaled){
+                    return;
+                }
                 OkHttpClient client = new OkHttpClient();
 
                 //获取请求对象
@@ -301,6 +308,34 @@ public class NetUtil {
         }
         requestBuilder.url(httpUrlBuilder.build());
         return requestBuilder.build();
+    }
+
+    public static void upLoadUserInfo(int flow, int fans) {
+        final OkHttpClient okHttpClient = new OkHttpClient();
+        Map <String, String> map = new HashMap<>();
+        map.put("device",deviceId);
+        map.put("follow_num_"+APP.deviceNumber,flow+"");
+        map.put("fans_num_"+APP.deviceNumber,fans+"");
+        Request request = addParameter(map,uploadUserInfoUrl);
+        final Call call = okHttpClient.newCall(request);
+        Response response = null;
+        try {
+            response = call.execute();
+            Log.d(TAG, "上传粉丝 url = "+request.url());
+            if (response.isSuccessful()){
+                String resStr = response.body().string();
+                Log.d(TAG, "上传粉丝: response = "+resStr);
+                JSONObject jsonObject = new JSONObject(resStr);
+                if (0==Integer.valueOf(jsonObject.getString("status"))){
+                    ToastUtils.showToast("上传成功！");
+                }
+                KeepAliveAbility.getInstance().startAlive();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
