@@ -72,7 +72,6 @@ public class KeepAliveAbility extends Ability {
     private void MainActivityToRight() {
         final int x = ScreenUtils.getScreenWidth(mService);
         final int y = ScreenUtils.getScreenHeight(mService) / 2;
-        Log.e("TIAOSHI###","MyAccessibilityService中滑动左滑动点,reset：（"+x+","+y+")");
         Path path = new Path();
         path.moveTo(x - 800, y);
         path.lineTo(x, y);

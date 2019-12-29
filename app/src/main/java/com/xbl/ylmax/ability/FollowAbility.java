@@ -32,7 +32,9 @@ public class FollowAbility extends Ability {
             nodeInfo.recycle();
             for (AccessibilityNodeInfo item : list) {
                 if ("关注".equals(item.getText().toString())) {
-                    item.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                    Rect outBounds = new Rect();
+                    item.getBoundsInScreen(outBounds);
+                    NodeUtil.clickPoint(mService,outBounds.centerX(), outBounds.centerY(), 100);
                     SystemClock.sleep(5000);
                 }
             }
