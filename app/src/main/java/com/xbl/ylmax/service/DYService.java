@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.MainActivity;
 import com.xbl.ylmax.ability.CommAbility;
+import com.xbl.ylmax.ability.FollowAbility;
 import com.xbl.ylmax.ability.KeepAliveAbility;
 import com.xbl.ylmax.ability.LoginAbility;
 import com.xbl.ylmax.ability.UserAbility;
@@ -199,6 +200,7 @@ public class DYService extends AccessibilityService {
         CommAbility.getInstance().init(this);
         UserAbility.getInstance().init(this);
         KeepAliveAbility.getInstance().init(this);
+        FollowAbility.getInstance().init(this);
         startActivity(new Intent(this, MainActivity.class));
     }
 
