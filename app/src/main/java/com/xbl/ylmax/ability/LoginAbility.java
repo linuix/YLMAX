@@ -1,6 +1,7 @@
 package com.xbl.ylmax.ability;
 
 
+import android.accessibilityservice.AccessibilityService;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
@@ -14,13 +15,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.xbl.ylmax.APP;
 import com.xbl.ylmax.utils.NetUtil;
 import com.xbl.ylmax.utils.NodeUtil;
+import com.xbl.ylmax.utils.SPUtil;
 import com.xbl.ylmax.utils.ToastUtils;
 
 import java.util.List;
 
 import androidx.annotation.RequiresApi;
 
-import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.xbl.ylmax.utils.NodeUtil.findNodeForText;
 import static com.xbl.ylmax.utils.NodeUtil.targetNodeInfo;
 
@@ -38,6 +39,17 @@ public class LoginAbility extends Ability {
 
     public static LoginAbility getInstance(){
         return loginAbility;
+    }
+
+    private String workStatus = "workStatus";
+
+    public boolean isWorked = false;
+
+    @Override
+    public void init(AccessibilityService accessibilityService) {
+        super.init(accessibilityService);
+        isWorked = SPUtil.readDataFromKey(workStatus,Boolean.class);
+        Log.d(TAG, "init: isWorked = "+isWorked);
     }
 
     public void openDY(AccessibilityEvent event){

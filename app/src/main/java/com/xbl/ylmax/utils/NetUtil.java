@@ -50,9 +50,13 @@ public class NetUtil {
 
     public static final String keyValueUrl = "http://13.228.16.161:33023/api/getconfig";
 
+    public static final String obtainDeviceUrl = "http://13.228.16.161:33023/api/ver_device";
+
+
     public static final String nickImgUrl = "http://13.228.16.161:33023/api/information";
 
     public static final String YIXINGUrl = "http://yixin.xx09.cn:88/yhapi.ashx";
+
 
     public static void obtainPhoneAndDownloadImg(){
         final OkHttpClient okHttpClient = new OkHttpClient();
@@ -254,6 +258,39 @@ public class NetUtil {
         },0);
     }
 
+    public static void checkDeviceId(final DeviceCallBack deviceCallBack){
+        final OkHttpClient okHttpClient = new OkHttpClient();
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                Map <String, String> map = new HashMap<>();
+                map.put("device",deviceId);
+                Request request = addParameter(map,obtainDeviceUrl);
+                final Call call = okHttpClient.newCall(request);
+                Response response = null;
+                try {
+                    response = call.execute();
+                    Log.d(TAG, "run: 获取手机号码 url = "+request.url());
+                    if (response.isSuccessful()){
+                        String resStr = response.body().string();
+                        Log.d(TAG, "getPhone YIXINGUrl: response = "+resStr);
+                        JSONObject jsonObject = new JSONObject(resStr);
+
+                        deviceCallBack.dataBack(jsonObject.getString("status").equals("0"));
+
+
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    deviceCallBack.dataBack(false);
+                }
+            }
+        },0);
+    }
+
+
     static Request addParameter(Map<String,String> map,String url){
         Request.Builder requestBuilder = new Request.Builder();
         HttpUrl.Builder httpUrlBuilder = HttpUrl.parse(url).newBuilder();
@@ -266,6 +303,10 @@ public class NetUtil {
         return requestBuilder.build();
     }
 
+
+    public static interface DeviceCallBack{
+        void dataBack(boolean isSuccess);
+    }
 
 
     public static String toStr() {

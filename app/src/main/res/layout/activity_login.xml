@@ -29,6 +29,7 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:focusable="true"
+            android:text="dsfd9d7f9s7f9sd"
             app:layout_constraintStart_toEndOf="@+id/text_device_id" />
     </LinearLayout>
 

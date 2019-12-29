@@ -39,50 +39,40 @@ public class UserAbility extends Ability {
 
     public void gotoEdit() {
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
-        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"编辑资料");
-        if (accessibilityNodeInfoList.size() > 0){
-            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            ToastUtils.showToast("进入资料修改界面！");
-        }
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"编辑资料");
+        ToastUtils.showToast("编辑资料点击成功！");
     }
 
     public void showUpdateImg() {
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
-        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"点击更换头像");
-        if (accessibilityNodeInfoList.size() > 0){
-            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            ToastUtils.showToast("更换头像弹窗！");
-        }
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"点击更换头像");
+        ToastUtils.showToast("点击更换头像成功！");
     }
 
     public void editImg() {
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
-        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"相册选择");
-        if (accessibilityNodeInfoList.size() > 0){
-            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            ToastUtils.showToast("进入相册选择界面！");
-        }
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"相册选择");
+        ToastUtils.showToast("相册选择成功！");
     }
 
     public void selectImg() {
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findeNodeForClassName(accessibilityNodeInfo,"android.view.View");
         List<AccessibilityNodeInfo> okNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"确定");
-        if (accessibilityNodeInfoList.size() > 0){
+        if (accessibilityNodeInfoList!=null && accessibilityNodeInfoList.size() > 0){
             accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            if (okNodeInfoList.size()>0){
+            if (okNodeInfoList != null && okNodeInfoList.size()>0){
                 okNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 ToastUtils.showToast("选择成功！");
             }
         }
+
+
     }
 
     public void cropImg() {
         AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
-        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"完成");
-        if (accessibilityNodeInfoList.size() > 0){
-            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            ToastUtils.showToast("裁剪成功！");
-        }
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"完成");
+        ToastUtils.showToast("裁剪成功！");
     }
 }

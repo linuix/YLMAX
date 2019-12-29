@@ -3,6 +3,7 @@ package com.xbl.ylmax.utils;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -120,4 +121,38 @@ public class NodeUtil {
             return false;
         }
     }
+
+    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt){
+        clickNodeForTxt(service,nodeInfo,txt,0);
+    }
+
+    /**
+     * 根据txt点击节点
+     * @param service
+     * @param nodeInfo
+     * @param txt
+     * @param index 第几个
+     */
+    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int index){
+        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(nodeInfo,txt);
+
+        if (accessibilityNodeInfoList!=null && accessibilityNodeInfoList.size() > index){
+            boolean clicked = accessibilityNodeInfoList.get(index).performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            if (clicked){
+                Log.d(TAG, "clickNodeForTxt: txt = "+txt+"点击成功");
+            }else {
+                Rect rect = new Rect();
+                accessibilityNodeInfoList.get(index).getBoundsInScreen(rect);
+                int x = rect.centerX();
+                int y = rect.centerY();
+                clickPoint(service,x,y,100);
+            }
+        }
+    }
+
+
+    public static void clickHome(){
+
+    }
+
 }

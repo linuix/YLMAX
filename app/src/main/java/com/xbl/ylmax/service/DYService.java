@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
@@ -26,6 +27,7 @@ import com.xbl.ylmax.ability.KeepAliveAbility;
 import com.xbl.ylmax.ability.LoginAbility;
 import com.xbl.ylmax.ability.UserAbility;
 import com.xbl.ylmax.constString.ConstString;
+import com.xbl.ylmax.utils.NetUtil;
 import com.xbl.ylmax.utils.ScreenUtils;
 import com.xbl.ylmax.utils.SystemInfoUtils;
 import com.xbl.ylmax.utils.ToastUtils;
@@ -69,7 +71,6 @@ public class DYService extends AccessibilityService {
         //TODO
         //获取配置 1.第三方码平台账号 2.后台全局设置参数相关
         context = getApplicationContext();
-        ToastUtils.showToast(context, "启动服务");
         Log.d(TAG, "onCreate: ");
         //新开线程启动APP，防止主线程阻塞
 //        Thread newThread  = new Thread(new Runnable() {
@@ -94,6 +95,9 @@ public class DYService extends AccessibilityService {
         this.event = event;
         int type = event.getEventType();
         if (type == 0x800){
+            return;
+        }
+        if (TextUtils.isEmpty(NetUtil.deviceId)){
             return;
         }
         Log.d(TAG, "onAccessibilityEvent: event type = 0x" + Integer.toHexString(type));
@@ -127,24 +131,64 @@ public class DYService extends AccessibilityService {
                         APP.runWorkThread(new Runnable() {
                             @Override
                             public void run() {
-//                                LoginAbility.getInstance().gotoUserCenter();
-                                KeepAliveAbility.getInstance().doubleClick();
-//                                UserAbility.getInstance().gotoEdit();
+                                LoginAbility.getInstance().gotoUserCenter();
+//                                KeepAliveAbility.getInstance().doubleClick();
+
+                                APP.runWorkThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        UserAbility.getInstance().gotoEdit();
+                                    }
+                                },delayTime);
 //                                KeepAliveAbility.getInstance().obtainUserFlow();
                             }
-                        },delayTime);
+                        },delayTime*3);
                     }else if (cName.getClassName().equals(updataLevelClass)){
-                        CommAbility.getInstance().ignoreUpdate();
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                CommAbility.getInstance().ignoreUpdate();
+                            }
+                        },delayTime);
                     }else if (cName.getClassName().equals(updateNameClass)){
-                        UserAbility.getInstance().updateNickName();
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                UserAbility.getInstance().updateNickName();
+                            }
+                        },delayTime);
+
                     }else if(cName.getClassName().equals(INFO_EDIT_ACTIVITY)){
-                        UserAbility.getInstance().showUpdateImg();
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                UserAbility.getInstance().showUpdateImg();
+                            }
+                        },delayTime);
                     }else if (cName.getClassName().equals(updateUserImgClass)){
-                        UserAbility.getInstance().editImg();
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                UserAbility.getInstance().editImg();
+                            }
+                        },delayTime);
+
                     }else if (cName.getClassName().equals(SELECT_IMG_ACTIVITY)){
-                        UserAbility.getInstance().selectImg();
+
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                UserAbility.getInstance().selectImg();
+                            }
+                        },delayTime);
                     }else if (cName.getClassName().equals(CROP_IMG_ACTIVITY)){
-                        UserAbility.getInstance().cropImg();
+
+                        APP.runWorkThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                UserAbility.getInstance().cropImg();
+                            }
+                        },delayTime);
                     }
 //                    APP.runWorkThread(new Runnable() {
 //                        @Override
@@ -199,7 +243,6 @@ public class DYService extends AccessibilityService {
         CommAbility.getInstance().init(this);
         UserAbility.getInstance().init(this);
         KeepAliveAbility.getInstance().init(this);
-        startActivity(new Intent(this, MainActivity.class));
     }
 
     public void mySleep(int m) {

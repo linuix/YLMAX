@@ -8,24 +8,17 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="抖音引流"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="启动APP"
         android:id="@+id/StartButton"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
 
     <Button
         android:id="@+id/testButton"
@@ -33,7 +26,23 @@
         android:layout_height="wrap_content"
         android:text="测试网络数据"
         android:onClick="testNet"
-        tools:layout_editor_absoluteX="151dp"
-        tools:layout_editor_absoluteY="362dp" />
+        app:layout_constraintLeft_toRightOf="@+id/StartButton"
+ />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@id/StartButton"
+        android:layout_marginTop="50dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="抖音引流"
+            android:id="@+id/all_msg"
+            />
+
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

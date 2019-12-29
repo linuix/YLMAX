@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.security.Permissions;
@@ -33,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private Button startButton;
     private Timer timer = new Timer();
+
+    public static TextView allMsgTV;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,16 +58,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},1);
-        }
+        allMsgTV = findViewById(R.id.all_msg);
+
+
+
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                NetUtil.obtainPhoneAndDownloadImg();
+            }
+        },300);
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 
     public void SetToast(final String message)
     {
@@ -101,5 +108,12 @@ public class MainActivity extends AppCompatActivity {
 //        NetUtil.obtainPhoneAndDownloadImg();
         boolean res = NodeUtil.isNumericZidai("213");
         Log.d(TAG, "testNet: res = "+res);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        allMsgTV = null;
     }
 }

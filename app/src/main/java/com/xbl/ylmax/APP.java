@@ -19,6 +19,8 @@ public class APP extends Application {
     private static APP S_CONTENT;
 
     public static final int MSG_TOAST = 0X1001;
+    public static final int MSG_APPEND = 0X1002;
+
 
     public Handler mHandler = new Handler(new Handler.Callback() {
         @Override
@@ -26,6 +28,11 @@ public class APP extends Application {
             switch (msg.what){
                 case MSG_TOAST:{
                     Toast.makeText(APP.this.getApplicationContext(),msg.obj.toString(),Toast.LENGTH_SHORT).show();
+                }
+                case MSG_APPEND:{
+                    if (MainActivity.allMsgTV != null){
+                        MainActivity.allMsgTV.append(msg.obj.toString()+"\n");
+                    }
                     break;
                 }
             }

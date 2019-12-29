@@ -1,8 +1,11 @@
 package com.xbl.ylmax;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -28,15 +31,32 @@ public class LoginActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               String device =  deviceET.getText().toString();
-               if (NetUtil.deviceId.equals(device)){
-                   startActivity(new Intent(LoginActivity.this,MainActivity.class));
-               }else {
-                   ToastUtils.showToast("设备号错误！");
-               }
+               NetUtil.deviceId =  deviceET.getText().toString();
+
+               NetUtil.checkDeviceId(new NetUtil.DeviceCallBack() {
+                   @Override
+                   public void dataBack(boolean isSuccess) {
+                       if (isSuccess){
+                           ToastUtils.showToast("设备号校验成功");
+                           startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                       }else {
+                           ToastUtils.showToast("设备号错误！");
+                       }
+                   }
+               });
+
             }
         });
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
 
