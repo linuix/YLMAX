@@ -60,6 +60,9 @@ public class DYService extends AccessibilityService {
 
     private AccessibilityEvent event;
 
+
+    private int delayTime = 2000;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -106,10 +109,9 @@ public class DYService extends AccessibilityService {
                         public void run() {
                             LoginAbility.getInstance().openDY(event);
                         }
-                    }, 1000);
+                    }, delayTime);
 
                 } else if (DY_PACKAGE.equals(event.getPackageName())) {
-
                     ComponentName cName = new ComponentName(event.getPackageName().toString(),
                             event.getClassName().toString());
                     Log.d(TAG, "onAccessibilityEvent: cName.getClassName() = "+cName.getClassName());
@@ -119,19 +121,18 @@ public class DYService extends AccessibilityService {
                             public void run() {
                                 LoginAbility.getInstance().inputPhoneNumber();
                             }
-                        },2000);
+                        },delayTime);
 
                     }else if (cName.getClassName().equals(DY_MAINACTIVITY)){
                         APP.runWorkThread(new Runnable() {
                             @Override
                             public void run() {
 //                                LoginAbility.getInstance().gotoUserCenter();
-                                SystemClock.sleep(3000);
                                 KeepAliveAbility.getInstance().doubleClick();
 //                                UserAbility.getInstance().gotoEdit();
 //                                KeepAliveAbility.getInstance().obtainUserFlow();
                             }
-                        },1000);
+                        },delayTime);
                     }else if (cName.getClassName().equals(updataLevelClass)){
                         CommAbility.getInstance().ignoreUpdate();
                     }else if (cName.getClassName().equals(updateNameClass)){

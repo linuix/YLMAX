@@ -44,6 +44,7 @@ public class NetUtil {
     public static String token;
     public static String msgCode;
     public static String pid;
+    public static String deviceId = "";
 
 
 

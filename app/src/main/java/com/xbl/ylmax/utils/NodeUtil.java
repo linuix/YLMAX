@@ -109,12 +109,15 @@ public class NodeUtil {
             return false;
         }
         String str = charSequence.toString();
-        for (int i = 0; i < str.length(); i++) {
-            System.out.println(str.charAt(i));
-            if (!Character.isDigit(str.charAt(i))) {
-                return false;
-            }
+        String lasetStr = str.substring(str.length()-1);
+        if ("w".equals(lasetStr)){
+            str = str.substring(0,str.length()-1);
         }
-        return true;
+        try{
+            double d = Double.valueOf(str);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 }

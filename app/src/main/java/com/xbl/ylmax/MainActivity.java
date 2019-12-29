@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import com.xbl.ylmax.service.DYService;
 import com.xbl.ylmax.utils.NetUtil;
+import com.xbl.ylmax.utils.NodeUtil;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import java.security.Permissions;
 import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private Context context;
     private Button startButton;
     private Timer timer = new Timer();
@@ -95,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void testNet(View view) {
-        NetUtil.obtainPhoneAndDownloadImg();
+//        NetUtil.obtainPhoneAndDownloadImg();
+        boolean res = NodeUtil.isNumericZidai("213");
+        Log.d(TAG, "testNet: res = "+res);
     }
 }
