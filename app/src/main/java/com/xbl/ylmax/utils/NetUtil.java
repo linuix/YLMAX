@@ -1,6 +1,8 @@
 package com.xbl.ylmax.utils;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -42,12 +44,14 @@ public class NetUtil {
     public static String nickName = null;
     public static String imgUrl = null;
     public static String imgName = null;
+    public static String videoUrl = null;
 
     public static String phoneNumber;
     public static String token;
     public static String msgCode;
     public static String pid;
-    public static String deviceId = "";
+    public static String deviceId = "1";
+    public static DeviceInfo deviceInfo;
 
 
 
@@ -66,6 +70,14 @@ public class NetUtil {
 
     public static void obtainPhoneAndDownloadImg(){
         final OkHttpClient okHttpClient = new OkHttpClient();
+        final File parentDir = new File("/sdcard/DCIM/Camera");
+        if (!parentDir.exists()){
+            if (!parentDir.mkdirs()){
+                ToastUtils.showToast("文件创建失败，请检查手机内存是否充足");
+                APP.workHandler.removeCallbacks(null);
+                return;
+            }
+        }
         //获取账号密码
         APP.runWorkThread(new Runnable() {
             @Override
@@ -112,7 +124,7 @@ public class NetUtil {
                         String resStr = response.body().string();
                         Log.d(TAG, "deviceUrl: response = "+resStr);
                         com.alibaba.fastjson.JSONObject json = JSON.parseObject(resStr);
-                        DeviceInfo deviceInfo= JSON.toJavaObject(json,DeviceInfo.class);
+                        deviceInfo = JSON.toJavaObject(json,DeviceInfo.class);
                         Log.d(TAG, "run: deviceInfo.toString() = "+deviceInfo.toString());
 
 //                        JSONObject jsonObject = new JSONObject(resStr);
@@ -240,8 +252,8 @@ public class NetUtil {
                     body = client.newCall(request).execute().body();
                     //获取流
                     InputStream in = body.byteStream();
-
-                    FileOutputStream fileOutputStream = new FileOutputStream("/sdcard/ylmax"+ SystemClock.elapsedRealtime()+imgName);
+                    File imgFile = new File(parentDir,imgName);
+                    FileOutputStream fileOutputStream = new FileOutputStream(imgFile);
                     byte data[] = new byte[4096];
                     int size = 0;
                     while (0<(size = in.read(data))){
@@ -249,12 +261,56 @@ public class NetUtil {
                     }
                     fileOutputStream.flush();
                     fileOutputStream.close();
+                    KeepAliveAbility.getInstance().isUploadVideo = true;
+                    Intent mediaScanIntent = new Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    Uri contentUri = Uri.parse("file://"+imgFile.getAbsolutePath()); //out is your output file
+                    mediaScanIntent.setData(contentUri);
+                    APP.getInstance().sendBroadcast(mediaScanIntent);
                     ToastUtils.showToast("图片下载完成");
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
+            }
+        },0);
+
+        //下载视频
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+                Log.d(TAG, "videoUrl = "+(videoUrl = deviceInfo.getVideoUrl()));
+                //获取请求对象
+                Request request = new Request.Builder().url(videoUrl).build();
+                //获取响应体
+                ResponseBody body = null;
+
+                try {
+                    body = client.newCall(request).execute().body();
+                    //获取流
+                    InputStream in = body.byteStream();
+                    File videoFile = new File(parentDir,SystemClock.elapsedRealtimeNanos()+".mp4");
+                    FileOutputStream fileOutputStream = new FileOutputStream(videoFile);
+                    byte data[] = new byte[4096];
+                    int size = 0;
+                    while (0<(size = in.read(data))){
+                        fileOutputStream.write(data,0,size);
+                    }
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+//                    APP.getInstance().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+videoFile.getAbsolutePath())));
+                    Intent mediaScanIntent = new Intent(
+                            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    Uri contentUri = Uri.parse("file://"+videoFile.getAbsolutePath()); //out is your output file
+                    mediaScanIntent.setData(contentUri);
+                    APP.getInstance().sendBroadcast(mediaScanIntent);
+                    ToastUtils.showToast("视频下载完成");
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         },0);
 

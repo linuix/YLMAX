@@ -38,7 +38,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="抖音引流"
             android:id="@+id/all_msg"
             />
 

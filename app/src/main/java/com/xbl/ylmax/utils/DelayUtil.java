@@ -22,13 +22,12 @@ public class DelayUtil {
 
 
     public static int getViewVideoTime(){
-
         Random random = new Random();
         int f = random.nextInt(maxVideoTime - minVideoTime);
         viewVideoTime = minVideoTime + f;
         viewVideoTime = viewVideoTime*1000;
         Log.d(TAG, "getViewVideoTime: viewVideoTime = "+viewVideoTime);
-        return 15000;
+        return viewVideoTime;
     }
 
 

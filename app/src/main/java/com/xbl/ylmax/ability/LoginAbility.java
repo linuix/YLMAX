@@ -121,20 +121,4 @@ public class LoginAbility extends Ability {
     }
 
 
-
-    public void skipUpdate(){
-        AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
-        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(accessibilityNodeInfo,"检测到新版本");
-        if (accessibilityNodeInfoList.size()>0) {
-            List<AccessibilityNodeInfo> skipNodeList = NodeUtil.findNodeForText(accessibilityNodeInfo,"以后在说");
-            if (skipNodeList.size()>0){
-                Log.d(TAG, "skipUpdate: skipNodeList.size() = "+skipNodeList.size());
-                skipNodeList.get(0).performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                ToastUtils.showToast("跳过升级！");
-            }
-        }
-    }
-
-
-
 }

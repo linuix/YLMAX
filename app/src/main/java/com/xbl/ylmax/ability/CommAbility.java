@@ -37,5 +37,11 @@ public class CommAbility extends Ability {
         ToastUtils.showToast("取消好友通讯录！");
     }
 
+    public void ignoreChildMode(){
+        AccessibilityNodeInfo accessibilityNodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,accessibilityNodeInfo,"我知道了");
+        ToastUtils.showToast("取消好友通讯录！");
+    }
+
 
 }

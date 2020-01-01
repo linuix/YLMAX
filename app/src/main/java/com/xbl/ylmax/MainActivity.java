@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.security.Permissions;
 import java.util.Timer;
 
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Context context;
     private Button startButton;
-    private Timer timer = new Timer();
 
     public static TextView allMsgTV;
 
@@ -113,8 +113,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void testNet(View view) {
 //        NetUtil.obtainPhoneAndDownloadImg();
-        boolean res = NodeUtil.isNumericZidai("213");
-        Log.d(TAG, "testNet: res = "+res);
+//        boolean res = NodeUtil.isNumericZidai("213");
+//        Log.d(TAG, "testNet: res = "+res);
+        File file = new File("/sdcard/test1111/tesetttt/testeee");
+        if (!file.exists()){
+            Log.d(TAG, "testNet: file.mkdirs() = "+file.mkdirs());
+        }
     }
 
 

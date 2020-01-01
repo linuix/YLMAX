@@ -12,7 +12,6 @@ import com.xbl.ylmax.utils.DelayUtil;
 import com.xbl.ylmax.utils.NetUtil;
 import com.xbl.ylmax.utils.NodeUtil;
 import com.xbl.ylmax.utils.ScreenUtils;
-import com.xbl.ylmax.utils.SystemInfoUtils;
 import com.xbl.ylmax.utils.ToastUtils;
 
 import java.util.List;
@@ -39,6 +38,7 @@ public class KeepAliveAbility extends Ability {
 
 
     private static KeepAliveAbility keepAliveAbility = new KeepAliveAbility();
+    public boolean isUploadVideo = true;
 
     public static KeepAliveAbility getInstance(){
         return keepAliveAbility;
@@ -201,5 +201,54 @@ public class KeepAliveAbility extends Ability {
                 ToastUtils.showToast("浏览下一个视频");
             }
         }, DelayUtil.getViewVideoTime());
+    }
+
+    /**
+     * 开始上传视频
+     */
+    public void startUploadVideo() {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,nodeInfo,"拍摄，按钮");
+        ToastUtils.showToast("点击拍摄按钮成功！");
+    }
+
+    /**
+     * 开始选择视频
+     */
+    public void startSelectVideo() {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,nodeInfo,"上传",0,-47);
+        ToastUtils.showToast("点击上传成功！");
+    }
+
+    /**
+     * 选择视频
+     */
+    public void selectVideo() {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,nodeInfo,"视频",-77,115);
+        ToastUtils.showToast("选择视频成功！");
+    }
+
+    public void cropVideo() {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+        NodeUtil.clickNodeForTxt(mService,nodeInfo,"下一步");
+        ToastUtils.showToast("选择视频成功！");
+    }
+
+    public void addTitleAndPublish() {
+        AccessibilityNodeInfo nodeInfo = mService.getRootInActiveWindow();
+
+        NodeUtil.addTextToNode(mService,nodeInfo,"写标题",NetUtil.deviceInfo.getVideoTitle());
+        ToastUtils.showToast("添加标题成功！");
+        APP.runWorkThread(new Runnable() {
+            @Override
+            public void run() {
+                NodeUtil.clickNedeForTxt(mService,mService.getRootInActiveWindow(),"发布",1);
+                isUploadVideo = false;
+                ToastUtils.showToast("发布成功！");
+            }
+        },DelayUtil.getCommTime());
+
     }
 }

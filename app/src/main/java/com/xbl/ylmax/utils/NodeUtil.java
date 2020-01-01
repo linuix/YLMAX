@@ -5,6 +5,7 @@ import android.accessibilityservice.GestureDescription;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -124,11 +125,20 @@ public class NodeUtil {
         }
     }
 
+
+    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int offsetX, int offsetY){
+        clickNodeForTxt(service,nodeInfo,txt,0,null,offsetX,offsetY);
+    }
+
     public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt){
-        clickNodeForTxt(service,nodeInfo,txt,0,null);
+        clickNodeForTxt(service,nodeInfo,txt,0,null,0,0);
     }
     public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt,String cls){
-        clickNodeForTxt(service,nodeInfo,txt,0,cls);
+        clickNodeForTxt(service,nodeInfo,txt,0,cls,0,0);
+    }
+
+    public static void clickNedeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int index){
+        clickNodeForTxt(service,nodeInfo,txt,index,null,0,0);
     }
 
     /**
@@ -138,7 +148,7 @@ public class NodeUtil {
      * @param txt
      * @param index 第几个
      */
-    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int index,String className){
+    public static void clickNodeForTxt(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String txt, int index,String className,int offsetX, int offsetY){
         List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(nodeInfo,txt);
         for (int i = accessibilityNodeInfoList.size()-1;i>=0;i--){
 
@@ -165,7 +175,7 @@ public class NodeUtil {
         if (accessibilityNodeInfoList!=null && accessibilityNodeInfoList.size() > index){
 //            boolean clicked = accessibilityNodeInfoList.get(index).performAction(AccessibilityNodeInfo.ACTION_CLICK);
             if (false){
-                Log.d(TAG, "clickNodeForTxt: txt = "+accessibilityNodeInfoList.get(index).getText()+"点击成功");
+//                Log.d(TAG, "clickNodeForTxt: txt = "+accessibilityNodeInfoList.get(index).getText()+"点击成功");
             }else {
                 Rect rect = new Rect();
                 accessibilityNodeInfoList.get(index).getBoundsInScreen(rect);
@@ -173,16 +183,35 @@ public class NodeUtil {
 //                Log.d(TAG, "clickNodeForTxt: right = "+rect.right);
 //                Log.d(TAG, "clickNodeForTxt: top = "+rect.top);
 //                Log.d(TAG, "clickNodeForTxt: bottom = "+rect.bottom);
-                int x = rect.centerX();
-                int y = rect.centerY();
-//                Log.d(TAG, "clickNodeForTxt: x = "+x);
-//                Log.d(TAG, "clickNodeForTxt: y = "+y);
+                int x = rect.centerX() + offsetX;
+                int y = rect.centerY() + offsetY;
+                Log.d(TAG, "clickNodeForTxt: x = "+x);
+                Log.d(TAG, "clickNodeForTxt: y = "+y);
                 clickPoint(service,x+20,y+10,200);
             }
 
         }
     }
 
+
+    public static void addTextToNode(AccessibilityService service, AccessibilityNodeInfo nodeInfo, String oldTxt, String newTxt){
+
+        List<AccessibilityNodeInfo> accessibilityNodeInfoList = NodeUtil.findNodeForText(nodeInfo, oldTxt);
+        if (accessibilityNodeInfoList.size() > 0){
+            Bundle arguments = new Bundle();
+            arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, newTxt);
+            accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,arguments);
+            ToastUtils.showToast("添加标题成功！");
+        }else {
+            accessibilityNodeInfoList = findeNodeForClassName(nodeInfo,"android.widget.EditText");
+            if (accessibilityNodeInfoList!= null && accessibilityNodeInfoList.size()>0){
+                Bundle arguments = new Bundle();
+                arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, newTxt);
+                accessibilityNodeInfoList.get(0).performAction(AccessibilityNodeInfo.ACTION_SET_TEXT,arguments);
+                ToastUtils.showToast("添加标题成功！");
+            }
+        }
+    }
 
     public static void goHome(AccessibilityService service){
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
@@ -191,6 +220,9 @@ public class NodeUtil {
     public static void topSlide(AccessibilityService service){
         service.performGlobalAction(AccessibilityService.GESTURE_SWIPE_UP);
     }
+
+
+
 
 
 
